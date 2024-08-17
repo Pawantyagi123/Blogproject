@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import appwriteService from "../appwrite/config";
 import Container from '../components/Container';
 import PostCard from '../components/PostCard';
-import authService from "../appwrite/auth"; // Import the AuthService
+import authService from "../appwrite/auth";
 
 function Home() {
     const [posts, setPosts] = useState([]);
@@ -11,11 +11,7 @@ function Home() {
     useEffect(() => {
         // Check if the user is logged in
         authService.getCurrentUser().then(user => {
-            if (user) {
-                setIsLoggedIn(true);
-            } else {
-                setIsLoggedIn(false);
-            }
+            setIsLoggedIn(!!user);
         });
 
         // Fetch posts
@@ -27,28 +23,22 @@ function Home() {
     }, []);
 
     return (
-        <div className="w-full py-8">
+        <div className="w-full py-8 px-4 md:px-8">
             <Container>
-                <div className="flex flex-wrap">
+                <div className="mb-8 text-center">
                     {isLoggedIn ? (
-                        <div className="w-full p-2">
-                            <h1 className="text-center text-2xl font-bold hover:text-gray-500">
-                                Create Post
-                            </h1>
-                        </div>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 hover:text-gray-600">
+                            Create Post
+                        </h1>
                     ) : (
-                        <div className="w-full p-2">
-                            <h1 className="text-center text-2xl font-bold hover:text-gray-500">
-                                Login to read posts
-                            </h1>
-                        </div>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 hover:text-gray-600">
+                            Login to read posts
+                        </h1>
                     )}
                 </div>
-                <div className="flex flex-wrap">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {posts.map((post) => (
-                        <div key={post.$id} className="p-2 w-1/4">
-                            <PostCard {...post} />
-                        </div>
+                        <PostCard key={post.$id} {...post} />
                     ))}
                 </div>
             </Container>
@@ -57,3 +47,4 @@ function Home() {
 }
 
 export default Home;
+

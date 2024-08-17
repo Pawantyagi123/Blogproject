@@ -13,19 +13,14 @@ function Signup() {
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const dispatch = useDispatch();
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     const create = async (data) => {
         try {
             // Attempt to create the account
             const createdUser = await authService.createAccount(data);
-            console.log("Created User:", createdUser);
-
             if (createdUser) {
-                // Retrieve the current user information
                 const currentUser = await authService.getCurrentUser();
-                console.log("Current User:", currentUser);
-
                 if (currentUser) {
                     dispatch(login(currentUser));
                     navigate("/");
@@ -37,68 +32,82 @@ function Signup() {
                 setError("Account creation failed.");
             }
         } catch (error) {
-            console.error("Signup error:", error);
             setError(error.message || "An error occurred during signup.");
             toast.error(error.message || "An error occurred during signup.");
         }
     };
 
     return (
-        <div className="flex items-center justify-center">
-            <div className="mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10">
-                <div className="mb-2 flex justify-center">
-                    <span className="inline-block w-full max-w-[100px]">
-                        <Logo width="100%" />
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-lg  rounded-lg shadow-lg p-10 border bg-gray-300">
+                <div className="mb-6 flex justify-center">
+                    <span className="inline-block w-24">
+                        <Logo />
                     </span>
                 </div>
-                <h2 className="text-center text-2xl font-bold leading-tight">
-                    Sign up to create an account
+                <h2 className="text-center text-3xl font-semibold text-gray-800">
+                    Sign Up
                 </h2>
-                <p className="mt-2 text-center text-base text-black/60">
+                <p className="mt-2 text-center text-gray-600">
                     Already have an account?&nbsp;
                     <Link
                         to="/login"
-                        className="font-medium text-primary transition-all duration-200 hover:underline"
+                        className="text-primary font-medium hover:underline"
                     >
                         Sign In
                     </Link>
                 </p>
-                {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
+                {error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
-                <form onSubmit={handleSubmit(create)}>
-                    <div className="space-y-5">
+                <form onSubmit={handleSubmit(create)} className="mt-6 space-y-6">
+                    <div>
                         <Input
-                            label="Full Name: "
+                            label="Full Name"
                             placeholder="Enter your full name"
                             {...register("name", {
-                                required: "Please enter your name",
+                                required: "Full name is required",
                             })}
+                            error={errors.name?.message}
                         />
+                        {errors.name && (
+                            <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                        )}
+                    </div>
+                    <div>
                         <Input
-                            label="Email: "
+                            label="Email"
                             placeholder="Enter your email"
                             type="email"
                             {...register("email", {
-                                required: "Please enter your email",
-                                validate: {
-                                    matchPattern: (value) =>
-                                        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                                        "Email address must be a valid address",
+                                required: "Email is required",
+                                pattern: {
+                                    value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+                                    message: "Enter a valid email address",
                                 },
                             })}
+                            error={errors.email?.message}
                         />
-                        <Input
-                            label="Password: "
-                            type="password"
-                            placeholder="Enter your password"
-                            {...register("password", {
-                                required: "Please enter your password",
-                            })}
-                        />
-                        <Button type="submit" className="w-full">
-                            Create Account
-                        </Button>
+                        {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                        )}
                     </div>
+                    <div>
+                        <Input
+                            label="Password"
+                            placeholder="Enter your password"
+                            type="password"
+                            {...register("password", {
+                                required: "Password is required",
+                            })}
+                            error={errors.password?.message}
+                        />
+                        {errors.password && (
+                            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                        )}
+                    </div>
+                    <Button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark">
+                        Create Account
+                    </Button>
                 </form>
             </div>
         </div>
@@ -106,3 +115,4 @@ function Signup() {
 }
 
 export default Signup;
+

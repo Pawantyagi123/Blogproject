@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+
 function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const authStatus = useSelector((state) => state.auth.status);
@@ -22,7 +23,7 @@ function Header() {
   };
 
   return (
-    <header className='py-3 shadow bg-gray-500'>
+    <header className='py-3 shadow bg-stone-900'>
       <Container>
         <nav className='flex items-center justify-between'>
           <div className='flex items-center'>
@@ -45,7 +46,7 @@ function Header() {
                 <li key={item.name}>
                   <button
                     onClick={() => navigate(item.slug)}
-                    className='inline-block px-6 py-2 duration-200 hover:bg-blue-100 rounded-full text-black'
+                    className='inline-block px-6 py-2 duration-200 hover:bg-blue-300 rounded-full text-white'
                   >
                     {item.name}
                   </button>
@@ -53,18 +54,20 @@ function Header() {
               ) : null
             )}
             {authStatus && (
+              
               <li>
                 <LogoutBtn />
               </li>
+              
             )}
           </ul>
         </nav>
       </Container>
       {/* Sidebar */}
-      <div className={`fixed inset-0 bg-gray-800 bg-opacity-85 transition-transform transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden z-20`}>
+      <div className={`fixed inset-0 bg-gray-800 bg-opacity-85 transition-transform transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden z-30`}>
         <div className='flex justify-end p-4'>
           {sidebarOpen && (
-            <button onClick={toggleSidebar} className='text-white'>
+            <button onClick={toggleSidebar} className='text-white text-xl'>
               <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M6 18L18 6M6 6l12 12'></path>
               </svg>
@@ -86,16 +89,10 @@ function Header() {
               </button>
             ) : null
           )}
-          {authStatus && (
-            <button
-              onClick={() => {
-                // Implement logout logic if needed
-                toggleSidebar();
-              }}
-              className='text-white text-xl py-4'
-            >
-              Logout
-            </button>
+          {authStatus && ( 
+            
+            <LogoutBtn/>
+            
           )}
         </nav>
       </div>

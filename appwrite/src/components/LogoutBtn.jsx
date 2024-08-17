@@ -3,7 +3,9 @@ import {useDispatch} from 'react-redux'
 import authService from '../appwrite/auth'
 import {logout} from '../store/authSlice'
 import toast from 'react-hot-toast'
-
+import { IoIosLogOut } from "react-icons/io";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 function LogoutBtn() {
     const dispatch = useDispatch()
@@ -14,10 +16,15 @@ function LogoutBtn() {
         })
     }
   return (
-    <button
-    className='inline-bock px-6 py-2 duration-200 hover:bg-blue-100 rounded-full'
+    <Tippy placement='right' content={<span style={{color: 'white'}}>Logout</span>} >
+    <div
     onClick={logoutHandler}
-    >Logout</button>
+    className="flex items-center justify-center p-2 bg-red-500 text-white rounded-full hover:bg-red-600 cursor-pointer transition-colors duration-200"
+  >
+    <IoIosLogOut className="text-2xl" />
+  </div>
+  </Tippy>
+ 
   )
 }
 

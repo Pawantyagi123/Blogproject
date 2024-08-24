@@ -12,7 +12,7 @@ function LogoutBtn() {
     const logoutHandler = () => {
         authService.logout().then(() => {
             dispatch(logout())
-            toast.success("Logout successfully")
+            toast.success("Logout")
         })
     }
   return (

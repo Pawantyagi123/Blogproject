@@ -24,7 +24,7 @@ function Signup() {
                 if (currentUser) {
                     dispatch(login(currentUser));
                     navigate("/");
-                    toast.success("Account created successfully");
+                    toast.success(`Welcome ${data.name}`);
                 } else {
                     setError("Failed to retrieve user data after account creation.");
                 }

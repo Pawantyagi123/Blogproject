@@ -22,10 +22,47 @@ export default function PostForm({ post }) {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
 
+    const submit = async (data) => {
+        if (post) {
+            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+
+            if (file) {
+                appwriteService.deleteFile(post.featuredImage);
+            }
+
+            const dbPost = await appwriteService.updatePost(post.$id, {
+                ...data,
+                featuredImage: file ? file.$id : undefined,
+            });
+
+            if (dbPost) {
+                navigate(`/post/${dbPost.$id}`);
+            }
+        } else {
+            const file = await appwriteService.uploadFile(data.image[0]);
+
+            if (file) {
+                const fileId = file.$id;
+                data.featuredImage = fileId;
+                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
+
+                if (dbPost) {
+                    navigate(`/post/${dbPost.$id}`);
+                    toast.success("Post created successfully");
+                }
+            }
+        }
+    };
+
     const slugTransform = useCallback((value) => {
-        return value && typeof value === "string"
-            ? value.trim().toLowerCase().replace(/[^a-zA-Z\d\s]+/g, "-").replace(/\s+/g, "-")
-            : "";
+        if (value && typeof value === "string")
+            return value
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-zA-Z\d\s]+/g, "-")
+                .replace(/\s/g, "-");
+
+        return "";
     }, []);
 
     useEffect(() => {
@@ -34,65 +71,13 @@ export default function PostForm({ post }) {
                 setValue("slug", slugTransform(value.title), { shouldValidate: true });
             }
         });
+
         return () => subscription.unsubscribe();
     }, [watch, slugTransform, setValue]);
 
-    const handleFileUpload = async (file) => {
-        if (!file) return null;
-        try {
-            const uploadedFile = await appwriteService.uploadFile(file);
-            return uploadedFile.$id;
-        } catch (error) {
-            console.error("File upload failed:", error);
-            return null;
-        }
-    };
-
-    const handleDeleteFile = async (fileId) => {
-        if (!fileId) return;
-        try {
-            await appwriteService.deleteFile(fileId);
-        } catch (error) {
-            console.error("File deletion failed:", error);
-        }
-    };
-
-    const submit = async (data) => {
-        try {
-            let fileId = post?.featuredImage;
-            if (data.image?.[0]) {
-                fileId = await handleFileUpload(data.image[0]);
-                if (post?.featuredImage && fileId) {
-                    await handleDeleteFile(post.featuredImage);
-                }
-            }
-
-            const payload = {
-                ...data,
-                featuredImage: fileId,
-                userId: userData?.$id,
-            };
-
-            let dbPost;
-            if (post) {
-                dbPost = await appwriteService.updatePost(post.$id, payload);
-            } else {
-                dbPost = await appwriteService.createPost(payload);
-            }
-
-            if (dbPost) {
-                navigate(`/post/${dbPost.$id}`);
-                toast.success("Post uploaded Successfully");
-            }
-        } catch (error) {
-            console.error("Post submission failed:", error);
-            toast.error("Post submission failed");
-        }
-    };
-
     return (
-        <form onSubmit={handleSubmit(submit)} className="flex flex-wrap gap-4 justify-center">
-            <div className="w-full lg:w-2/3 px-2">
+        <form onSubmit={handleSubmit(submit)} className="flex flex-wrap gap-4">
+            <div className="w-full md:w-2/3 px-2">
                 <Input
                     label="Title :"
                     placeholder="Title"
@@ -110,7 +95,7 @@ export default function PostForm({ post }) {
                 />
                 <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
             </div>
-            <div className="w-full lg:w-1/3 px-2">
+            <div className="w-full md:w-1/3 px-2">
                 <Input
                     label="Featured Image :"
                     type="file"
@@ -118,12 +103,12 @@ export default function PostForm({ post }) {
                     accept="image/png, image/jpg, image/jpeg, image/gif"
                     {...register("image", { required: !post })}
                 />
-                {post?.featuredImage && (
+                {post && (
                     <div className="w-full mb-4">
                         <img
                             src={appwriteService.getFilePreview(post.featuredImage)}
                             alt={post.title}
-                            className="rounded-lg w-full object-cover"
+                            className="rounded-lg w-full h-auto"
                         />
                     </div>
                 )}
@@ -140,3 +125,5 @@ export default function PostForm({ post }) {
         </form>
     );
 }
+
+

@@ -76,7 +76,7 @@ export default function PostForm({ post }) {
     }, [watch, slugTransform, setValue]);
 
     return (
-        <form onSubmit={handleSubmit(submit)} className="flex flex-wrap gap-4">
+        <form onSubmit={handleSubmit(submit)} className="flex justify-center items-center flex-wrap gap-4">
             <div className="w-full md:w-2/3 px-2">
                 <Input
                     label="Title :"

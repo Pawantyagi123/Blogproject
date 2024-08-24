@@ -105,7 +105,7 @@ function Signup() {
                             <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
                         )}
                     </div>
-                    <Button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark">
+                    <Button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700">
                         Create Account
                     </Button>
                 </form>

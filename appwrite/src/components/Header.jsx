@@ -75,18 +75,20 @@ function Header() {
           )}
         </div>
         <nav className='flex flex-col items-center'>
+          <ul className='flex flex-col justify-around items-center'>
           {navItems.map((item) =>
             item.active ? (
+              <li key={item.name} className='gap-x-4 py-6'>
               <button
-                key={item.name}
                 onClick={() => {
                   navigate(item.slug);
                   toggleSidebar();
                 }}
-                className='text-white text-xl py-4'
+                className='text-white text-xl hover:border-b-2'
               >
                 {item.name}
               </button>
+              </li>
             ) : null
           )}
           {authStatus && ( 
@@ -94,6 +96,7 @@ function Header() {
             <LogoutBtn/>
             
           )}
+          </ul>
         </nav>
       </div>
     </header>
